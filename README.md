@@ -30,11 +30,16 @@ python3 -m http.server 8000   # luego abre http://localhost:8000
 
 ## Deploy
 
-Publicado con **GitHub Pages** desde la rama `main` (raíz). Cada `push` a `main`
-republica el sitio automáticamente.
+Publicado en **Cloudflare Pages** → `https://divid-landing.pages.dev`
+(host principal). Si el proyecto está conectado al repo por Git, cada `push` a
+`main` redeploya solo.
 
-Para usar el dominio propio `divid.club`: agregar un archivo `CNAME` con
-`divid.club`, y apuntar el DNS a GitHub Pages.
+También vive en **GitHub Pages** (`https://salvadrn.github.io/divid-landing/`)
+como respaldo.
+
+Dominio propio **`divid.site`**: en el dashboard, proyecto de Pages →
+**Custom domains** → agregar `divid.site`. Como el DNS está en Cloudflare, el
+registro se crea automáticamente.
 
 ## Origen de los assets
 
