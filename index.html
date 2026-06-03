@@ -118,6 +118,69 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   .hero .phone-wrap{order:-1}
   .sec-head h2{font-size:32px}
 }
+
+/* ===== Animaciones (CSS puro, sin JS — respeta el CSP) ===== */
+
+/* Entrada del hero al cargar. Solo ocultamos+animamos si el usuario NO pidió menos
+   movimiento; así el contenido nunca queda invisible por un fallo de animación. */
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:no-preference){
+  .hero h1,.hero .sub,.hero .cta,.hero .note,.hero .stamp,.hero .barcode{
+    opacity:0;animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+  .hero .stamp{animation-delay:.05s}
+  .hero h1{animation-delay:.12s}
+  .hero .sub{animation-delay:.22s}
+  .hero .cta{animation-delay:.32s}
+  .hero .note{animation-delay:.40s}
+  .hero .barcode{animation-delay:.48s}
+}
+
+/* El teléfono entra y luego flota suave en loop */
+@keyframes phoneIn{from{opacity:0;transform:translateY(30px) rotate(-2deg) scale(.96)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.phone-wrap img{
+  animation:phoneIn .9s cubic-bezier(.2,.7,.2,1) .25s both, float 6s ease-in-out 1.4s infinite;
+  filter:drop-shadow(0 22px 38px rgba(31,28,26,.28));
+  transition:transform .4s cubic-bezier(.2,.7,.2,1), filter .4s ease}
+.phone-wrap img:hover{transform:translateY(-6px) scale(1.02) rotate(.5deg);
+  filter:drop-shadow(0 30px 50px rgba(31,28,26,.34))}
+
+/* Reveal al hacer scroll (scroll-driven animations). Degradación: si el navegador
+   no soporta animation-timeline, el @supports no aplica y todo queda visible. */
+@keyframes reveal{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
+@supports (animation-timeline: view()){
+  .reveal{opacity:0;animation:reveal .8s cubic-bezier(.2,.7,.2,1) both;
+    animation-timeline:view();animation-range:entry 0% cover 32%}
+}
+
+/* Stagger: pequeño retraso por posición para que entren en cascada */
+.d1{animation-delay:.0s}.d2{animation-delay:.08s}.d3{animation-delay:.16s}.d4{animation-delay:.24s}
+
+/* Hover: elevación de las tarjetas de recibo */
+.receipt{transition:transform .3s cubic-bezier(.2,.7,.2,1), filter .3s ease}
+.feature:hover,.step:hover{transform:translateY(-6px);
+  filter:drop-shadow(0 16px 26px rgba(31,28,26,.22))}
+
+/* Hover: chips de modos de división */
+.mode{transition:transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease, background .25s ease}
+.mode:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 10px 20px rgba(31,28,26,.16);background:#fff}
+
+/* Fotos del showcase: sombra más rica + elevación e inclinación al hover */
+.shots img{transition:transform .4s cubic-bezier(.2,.7,.2,1), filter .4s ease;
+  filter:drop-shadow(0 16px 30px rgba(31,28,26,.22))}
+.shots img:hover{transform:translateY(-10px) rotate(-1deg) scale(1.03);
+  filter:drop-shadow(0 28px 46px rgba(31,28,26,.32))}
+
+/* Botones: un poco más de vida */
+.btn{transition:transform .15s cubic-bezier(.2,.7,.2,1), box-shadow .2s ease, opacity .15s}
+.btn.fill:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(31,28,26,.28)}
+.btn.out:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(31,28,26,.14)}
+
+/* Accesibilidad: si el usuario pide menos movimiento, desactivar todo */
+@media(prefers-reduced-motion:reduce){
+  *,.reveal,.phone-wrap img,.hero h1,.hero .sub,.hero .cta,.hero .note,.hero .stamp,.hero .barcode{
+    animation:none!important;opacity:1!important;transform:none!important}
+}
 </style>
 </head>
 <body>
@@ -157,19 +220,19 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <h2>Todo lo molesto de dividir, resuelto</h2>
   </div>
   <div class="features">
-    <div class="receipt feature"><div class="ic">🧮</div><h3>Divide como sea</h3><p>Igual entre todos, por montos exactos, por porcentaje o por partes. Tú decides en cada gasto.</p></div>
-    <div class="receipt feature"><div class="ic">🎯</div><h3>Solo quienes participaron</h3><p>¿El gasto no fue de todo el grupo? Elige exactamente quiénes entran. Nadie paga de más.</p></div>
-    <div class="receipt feature"><div class="ic">🤝</div><h3>¿Alguien invitó a otro?</h3><p>Ajusta el porcentaje de cada quien. Si tú cubres la parte de alguien, queda registrado y claro.</p></div>
-    <div class="receipt feature"><div class="ic">⚖️</div><h3>Quién le debe a quién</h3><p>Divid simplifica todas las deudas al mínimo de pagos posibles. Un toque para saldar.</p></div>
+    <div class="receipt feature reveal d1"><div class="ic">🧮</div><h3>Divide como sea</h3><p>Igual entre todos, por montos exactos, por porcentaje o por partes. Tú decides en cada gasto.</p></div>
+    <div class="receipt feature reveal d2"><div class="ic">🎯</div><h3>Solo quienes participaron</h3><p>¿El gasto no fue de todo el grupo? Elige exactamente quiénes entran. Nadie paga de más.</p></div>
+    <div class="receipt feature reveal d3"><div class="ic">🤝</div><h3>¿Alguien invitó a otro?</h3><p>Ajusta el porcentaje de cada quien. Si tú cubres la parte de alguien, queda registrado y claro.</p></div>
+    <div class="receipt feature reveal d4"><div class="ic">⚖️</div><h3>Quién le debe a quién</h3><p>Divid simplifica todas las deudas al mínimo de pagos posibles. Un toque para saldar.</p></div>
   </div>
 
   <div style="margin-top:40px;text-align:center">
     <div class="label" style="margin-bottom:16px">Cuatro modos de división</div>
     <div class="modes">
-      <div class="mode"><div class="g">=</div><div class="n">Igual</div><div class="d">parejo entre todos</div></div>
-      <div class="mode"><div class="g">$</div><div class="n">Montos</div><div class="d">tú pones cuánto</div></div>
-      <div class="mode"><div class="g">%</div><div class="n">Porcentaje</div><div class="d">debe sumar 100%</div></div>
-      <div class="mode"><div class="g">◑</div><div class="n">Partes</div><div class="d">2 partes vs 1</div></div>
+      <div class="mode reveal d1"><div class="g">=</div><div class="n">Igual</div><div class="d">parejo entre todos</div></div>
+      <div class="mode reveal d2"><div class="g">$</div><div class="n">Montos</div><div class="d">tú pones cuánto</div></div>
+      <div class="mode reveal d3"><div class="g">%</div><div class="n">Porcentaje</div><div class="d">debe sumar 100%</div></div>
+      <div class="mode reveal d4"><div class="g">◑</div><div class="n">Partes</div><div class="d">2 partes vs 1</div></div>
     </div>
   </div>
 </div></section>
@@ -180,9 +243,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <h2>Tres pasos y a la otra</h2>
   </div>
   <div class="steps">
-    <div class="receipt step"><div class="num">01</div><h3>Crea o únete a un grupo</h3><p>Un grupo para el viaje, los roomies o la peda del viernes. Tus amigos entran con un código de 6 letras.</p></div>
-    <div class="receipt step"><div class="num">02</div><h3>Registra el gasto</h3><p>Quién pagó, el concepto y el monto. Elige cómo se divide y entre quiénes. Listo en segundos.</p></div>
-    <div class="receipt step"><div class="num">03</div><h3>Salden y a otra cosa</h3><p>Divid te dice exactamente quién le paga a quién. Registras el pago y todo queda en ceros.</p></div>
+    <div class="receipt step reveal d1"><div class="num">01</div><h3>Crea o únete a un grupo</h3><p>Un grupo para el viaje, los roomies o la peda del viernes. Tus amigos entran con un código de 6 letras.</p></div>
+    <div class="receipt step reveal d2"><div class="num">02</div><h3>Registra el gasto</h3><p>Quién pagó, el concepto y el monto. Elige cómo se divide y entre quiénes. Listo en segundos.</p></div>
+    <div class="receipt step reveal d3"><div class="num">03</div><h3>Salden y a otra cosa</h3><p>Divid te dice exactamente quién le paga a quién. Registras el pago y todo queda en ceros.</p></div>
   </div>
 </div></section>
 
@@ -192,14 +255,14 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     <h2>Se ve como un ticket. Se siente fácil.</h2>
   </div>
   <div class="shots">
-    <img src="assets/screen4.png" alt="Lista de gastos del grupo">
-    <img src="assets/screen2.png" alt="Agregar gasto dividido por porcentaje">
-    <img src="assets/screen3.png" alt="Saldos: quién le debe a quién">
+    <img class="reveal d1" src="assets/screen4.png" alt="Lista de gastos del grupo">
+    <img class="reveal d2" src="assets/screen2.png" alt="Agregar gasto dividido por porcentaje">
+    <img class="reveal d3" src="assets/screen3.png" alt="Saldos: quién le debe a quién">
   </div>
 </div></section>
 
 <section id="waitlist" class="final"><div class="wrap">
-  <div class="receipt box">
+  <div class="receipt box reveal">
     <span class="stamp" style="color:var(--mint);border-color:var(--mint)">Acceso anticipado</span>
     <h2 style="margin-top:14px">Sé de los primeros en usarla</h2>
     <p class="waitlist-copy">Mándanos un correo y te avisamos en cuanto abramos el acceso. Sin formularios ni datos guardados: tú escribes desde tu propio correo.</p>
