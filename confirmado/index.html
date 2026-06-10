@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuenta confirmada — Divid</title>
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --paper:#F7F2E3;--paper-dark:#E6DEC9;--ink:#1F1C1A;--ink-soft:#5C544A;
+  --stamp:#CC4538;--mint:#217052;
+  --mono:'Menlo','Consolas','Courier New',monospace;--serif:Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--paper-dark);color:var(--ink);font-family:var(--mono);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.receipt{position:relative;background:var(--paper);max-width:420px;width:100%;
+  padding:42px 34px;text-align:center;filter:drop-shadow(0 8px 16px rgba(31,28,26,.2))}
+.receipt::before,.receipt::after{content:"";position:absolute;left:0;right:0;height:12px;
+  background:repeating-conic-gradient(from -45deg at 50% 0,var(--paper-dark) 0deg 90deg,transparent 90deg 180deg);
+  background-size:17px 17px}
+.receipt::before{top:-1px;transform:scaleY(-1)}.receipt::after{bottom:-1px}
+.brand{font-weight:800;letter-spacing:6px;font-size:22px;margin-bottom:6px}
+.tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft)}
+.dash{border:0;border-top:1.6px dashed rgba(31,28,26,.34);margin:22px 0}
+.stamp{display:inline-block;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mint);border:2.5px solid var(--mint);padding:7px 13px;transform:rotate(-6deg);font-size:14px}
+h1{font-family:var(--serif);font-size:26px;margin:20px 0 8px}
+p{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.btn{display:block;margin-top:24px;background:var(--ink);color:var(--paper);text-decoration:none;
+  font-weight:800;letter-spacing:1px;padding:15px;font-size:14px;text-transform:uppercase}
+.barcode{height:32px;margin:26px auto 0;max-width:220px;
+  background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px,
+    var(--ink) 5px 7px,transparent 7px 8px,var(--ink) 8px 12px,transparent 12px 14px,
+    var(--ink) 14px 15px,transparent 15px 19px)}
+.foot{font-size:10px;letter-spacing:2px;color:var(--ink-soft);margin-top:10px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="receipt">
+  <div class="brand">DIVID</div>
+  <div class="tag">divide la cuenta sin broncas</div>
+  <hr class="dash">
+  <span class="stamp">✓ Cuenta confirmada</span>
+  <h1>¡Todo listo!</h1>
+  <p>Tu correo quedó verificado. Vuelve a la app y entra con tu correo y contraseña.</p>
+  <a class="btn" href="divid://open">Abrir Divid</a>
+  <div class="barcode"></div>
+  <div class="foot">divid · mx · gracias por su preferencia</div>
+</div>
+</body>
+</html>
