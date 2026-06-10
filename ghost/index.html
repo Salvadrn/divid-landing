@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Divid 👻 — entra con tu código</title>
+<meta name="description" content="Entra a tu grupo de Divid desde la web con tu código de fantasma. Sin app, sin cuenta.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/icon-180.png">
+<style>
+:root{
+  --paper:#F7F2E3;--paper-dark:#E6DEC9;--ink:#1F1C1A;--ink-soft:#5C544A;
+  --stamp:#CC4538;--mint:#217052;--blue:#295785;--faint:#C7BDA3;
+  --mono:'Menlo','Consolas','Courier New',monospace;--serif:Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--paper-dark);color:var(--ink);font-family:var(--mono);min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;padding:28px 14px 60px}
+.wrap{width:100%;max-width:480px}
+.brand{text-align:center;margin-bottom:18px}
+.brand .word{font-weight:800;letter-spacing:7px;font-size:26px}
+.brand .tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ink-soft);margin-top:4px}
+.receipt{position:relative;background:var(--paper);padding:26px 22px;
+  filter:drop-shadow(0 7px 14px rgba(31,28,26,.18));margin-bottom:18px}
+.receipt::before,.receipt::after{content:"";position:absolute;left:0;right:0;height:11px;
+  background:repeating-conic-gradient(from -45deg at 50% 0,var(--paper-dark) 0deg 90deg,transparent 90deg 180deg);
+  background-size:15px 15px}
+.receipt::before{top:-1px;transform:scaleY(-1)}.receipt::after{bottom:-1px}
+.label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:6px}
+.dash{border:0;border-top:1.6px dashed rgba(31,28,26,.32);margin:14px 0}
+input,select{width:100%;font-family:var(--mono);font-size:16px;padding:13px 12px;background:var(--paper-dark);
+  border:1.4px solid rgba(31,28,26,.3);color:var(--ink);border-radius:0;-webkit-appearance:none;appearance:none}
+input:focus,select:focus{outline:2px solid var(--ink);outline-offset:-1px}
+.btn{display:block;width:100%;text-align:center;font-family:var(--mono);font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;font-size:14px;padding:15px;cursor:pointer;border:0;background:var(--ink);color:var(--paper)}
+.btn.out{background:transparent;color:var(--ink);border:1.6px solid var(--ink)}
+.btn:disabled{opacity:.55}
+.err{color:var(--stamp);font-size:12px;margin-top:10px;line-height:1.5}
+.muted{color:var(--ink-soft);font-size:11px;line-height:1.6}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.amount{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pos{color:var(--mint)}.neg{color:var(--stamp)}
+.tabs{display:flex;border:1.5px solid var(--ink);margin-bottom:16px}
+.tabs button{flex:1;font-family:var(--mono);font-weight:800;letter-spacing:1.5px;font-size:12px;
+  text-transform:uppercase;padding:12px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button.on{background:var(--ink);color:var(--paper)}
+.exp{padding:11px 0;border-bottom:1.6px dashed rgba(31,28,26,.22)}
+.exp:last-child{border-bottom:0}
+.exp .t{font-weight:700;font-size:14px}
+.exp .s{font-size:10px;color:var(--ink-soft);margin-top:3px;letter-spacing:.5px}
+.stamp{display:inline-block;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--mint);
+  border:2px solid var(--mint);padding:5px 10px;transform:rotate(-5deg);font-size:12px}
+.ghost-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.ghost-head .em{font-size:30px}
+.ghost-head .gname{font-family:var(--serif);font-size:20px;font-weight:700}
+.barcode{height:30px;margin:18px auto 0;max-width:210px;
+  background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px,var(--ink) 5px 7px,
+    transparent 7px 8px,var(--ink) 8px 12px,transparent 12px 14px,var(--ink) 14px 15px,transparent 15px 19px)}
+.foot{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink-soft);text-align:center;margin-top:10px}
+.linkout{background:none;border:0;font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+  text-decoration:underline;cursor:pointer;display:block;margin:14px auto 0}
+.field{margin-bottom:12px}
+.hidden{display:none}
+#code{letter-spacing:4px;text-transform:uppercase;text-align:center;font-size:20px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="word">DIVID <span style="font-size:20px">👻</span></div>
+    <div class="tag">modo fantasma · sin app, sin cuenta</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="vLogin" class="receipt hidden">
+    <div class="label">Ticket de entrada</div>
+    <hr class="dash">
+    <p class="muted" style="margin-bottom:14px">Alguien de tu grupo te invitó a Divid.
+      Escribe tu <b>código de fantasma</b> y entra directo — sin descargar nada.</p>
+    <div class="field"><input id="code" placeholder="CÓDIGO" autocomplete="off" maxlength="14"></div>
+    <button class="btn" id="bEnter">Entrar 👻</button>
+    <div class="err hidden" id="loginErr"></div>
+  </div>
+
+  <!-- APP -->
+  <div id="vApp" class="hidden">
+    <div class="receipt">
+      <div class="ghost-head"><span class="em" id="gEmoji">🧾</span>
+        <div><div class="gname" id="gName">—</div>
+        <div class="muted" id="meLine">—</div></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button id="tGastos" class="on">Gastos</button>
+      <button id="tSaldos">Saldos</button>
+    </div>
+
+    <div id="pGastos" class="receipt">
+      <div class="label">Gastos del grupo</div>
+      <hr class="dash">
+      <div id="expList" class="muted">Cargando…</div>
+      <hr class="dash">
+      <button class="btn" id="bAdd">+ Agregar gasto</button>
+    </div>
+
+    <div id="pSaldos" class="receipt hidden">
+      <div class="label">Resumen</div>
+      <hr class="dash">
+      <div id="netList" class="muted">Cargando…</div>
+      <hr class="dash">
+      <div class="label">Cómo saldar</div>
+      <div id="trList" class="muted"></div>
+      <hr class="dash">
+      <button class="btn out" id="bSettle">Registrar un pago</button>
+    </div>
+
+    <!-- modal agregar gasto -->
+    <div id="mAdd" class="receipt hidden">
+      <div class="label">Nuevo gasto</div>
+      <hr class="dash">
+      <div class="field"><div class="label">Concepto</div><input id="eDesc" placeholder="Cena, taxi, súper…"></div>
+      <div class="field"><div class="label">Monto total</div><input id="eAmt" inputmode="decimal" placeholder="0.00"></div>
+      <div class="field"><div class="label">Quién pagó</div><select id="ePayer"></select></div>
+      <p class="muted">Se divide igual entre todos los del grupo.</p>
+      <hr class="dash">
+      <button class="btn" id="bSaveExp">Guardar gasto</button>
+      <button class="linkout" id="bCancelExp">cancelar</button>
+      <div class="err hidden" id="expErr"></div>
+    </div>
+
+    <!-- modal registrar pago -->
+    <div id="mSettle" class="receipt hidden">
+      <div class="label">Registrar pago</div>
+      <hr class="dash">
+      <div class="field"><div class="label">De</div><select id="sFrom"></select></div>
+      <div class="field"><div class="label">Para</div><select id="sTo"></select></div>
+      <div class="field"><div class="label">Monto</div><input id="sAmt" inputmode="decimal" placeholder="0.00"></div>
+      <hr class="dash">
+      <button class="btn" id="bSaveSettle">Registrar</button>
+      <button class="linkout" id="bCancelSettle">cancelar</button>
+      <div class="err hidden" id="setErr"></div>
+    </div>
+
+    <button class="linkout" id="bRefresh">↻ actualizar</button>
+    <button class="linkout" id="bOut">salir del modo fantasma</button>
+  </div>
+
+  <div class="barcode"></div>
+  <div class="foot">divid · mx · gracias por su preferencia</div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SB_URL = 'https://hgzfrmwtmsslvldmnrnu.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnemZybXd0bXNzbHZsZG1ucm51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MDIyNDcsImV4cCI6MjA5NDk3ODI0N30.0E3loe4kjaLh-KP-VZ4aB5ETJyiCBMBtYBo1lsSgAqA';
+const sb = createClient(SB_URL, SB_ANON);
+
+const $ = id => document.getElementById(id);
+const CATS = {food:'🍔',transport:'🚗',lodging:'🏨',groceries:'🛒',fun:'🎉',drinks:'🍺',
+  shopping:'🛍️',health:'💊',home:'🏠',services:'🧾',other:'📦'};
+const money = (n,c='MXN') => new Intl.NumberFormat('es-MX',{style:'currency',currency:c}).format(n);
+
+let me=null, group=null, members=[], names={}, currency='MXN';
+
+// ---------- arranque: ¿hay sesión guardada? ----------
+const { data:{ session } } = await sb.auth.getSession();
+if (session) { await enterApp(); } else { show('vLogin'); }
+
+function show(view){
+  $('vLogin').classList.toggle('hidden', view!=='vLogin');
+  $('vApp').classList.toggle('hidden', view!=='vApp');
+}
+
+// ---------- login con código ----------
+$('bEnter').onclick = login;
+$('code').addEventListener('keydown', e => { if (e.key==='Enter') login(); });
+async function login(){
+  const code = $('code').value.replace(/[\s\-]/g,'').toUpperCase();
+  hideErr('loginErr');
+  if (code.length < 8) return err('loginErr','Tu código tiene al menos 8 caracteres.');
+  $('bEnter').disabled = true;
+  const { error } = await sb.auth.signInWithPassword({
+    email: `ghost-${code.toLowerCase()}@ghosts.divid.site`, password: code });
+  $('bEnter').disabled = false;
+  if (error) {
+    const m = (error.message||'').toLowerCase();
+    if (m.includes('banned')) return err('loginErr','Tu código fue desactivado por quien te invitó.');
+    return err('loginErr','Código no válido. Revísalo o pide otro a quien te invitó.');
+  }
+  await enterApp();
+}
+
+// ---------- app ----------
+async function enterApp(){
+  const { data:{ user } } = await sb.auth.getUser();
+  me = user.id;
+  // mi membresía → grupo
+  const { data: mems } = await sb.from('amigapp_group_members').select('group_id').eq('user_id', me);
+  if (!mems?.length) { await sb.auth.signOut(); return show('vLogin'); }
+  const gid = mems[0].group_id;
+  const { data: g } = await sb.from('amigapp_groups').select('*').eq('id', gid).single();
+  group = g; currency = g.currency || 'MXN';
+  $('gEmoji').textContent = g.emoji || '🧾';
+  $('gName').textContent = g.name;
+  await loadMembers();
+  $('meLine').textContent = `tú: ${names[me] ?? 'fantasma'} 👻 · código del grupo ${g.invite_code}`;
+  show('vApp');
+  await Promise.all([loadExpenses(), loadBalances()]);
+}
+
+async function loadMembers(){
+  const { data: mems } = await sb.from('amigapp_group_members').select('user_id').eq('group_id', group.id);
+  members = (mems||[]).map(m => m.user_id);
+  const { data: profs } = await sb.from('amigapp_profiles').select('id,display_name,is_ghost').in('id', members);
+  names = {};
+  for (const p of profs||[]) names[p.id] = p.display_name + (p.is_ghost ? ' 👻' : '');
+}
+
+async function loadExpenses(){
+  const { data: exps } = await sb.from('amigapp_expenses')
+    .select('description,amount,paid_by,spent_at,category')
+    .eq('group_id', group.id).order('spent_at', { ascending:false }).limit(60);
+  if (!exps?.length) { $('expList').innerHTML = 'Aún no hay gastos. ¡Estrénalo!'; return; }
+  $('expList').innerHTML = exps.map(e => {
+    const d = new Date(e.spent_at).toLocaleDateString('es-MX',{day:'numeric',month:'short'});
+    return `<div class="exp row"><div><div class="t">${CATS[e.category]??'📦'} ${esc(e.description)}</div>
+      <div class="s">${esc(names[e.paid_by]??'Alguien')} pagó · ${d}</div></div>
+      <div class="amount">${money(e.amount, currency)}</div></div>`;
+  }).join('');
+}
+
+async function loadBalances(){
+  const { data: net } = await sb.rpc('amigapp_group_net', { p_group: group.id });
+  if (!net) return;
+  $('netList').innerHTML = net.map(n =>
+    `<div class="row" style="padding:6px 0"><span>${esc(names[n.user_id]??'Alguien')}</span>
+     <span class="amount ${n.net>=0?'pos':'neg'}">${money(n.net, currency)}</span></div>`).join('')
+    || 'Sin movimientos.';
+  // transferencias mínimas (mismo algoritmo que la app)
+  const cred = net.filter(x=>x.net>0).map(x=>({id:x.user_id,a:Math.round(x.net*100)})).sort((a,b)=>b.a-a.a);
+  const deb  = net.filter(x=>x.net<0).map(x=>({id:x.user_id,a:-Math.round(x.net*100)})).sort((a,b)=>b.a-a.a);
+  const tr=[]; let ci=0, di=0;
+  while (ci<cred.length && di<deb.length){
+    const amt = Math.min(cred[ci].a, deb[di].a);
+    if (amt>0) tr.push({from:deb[di].id, to:cred[ci].id, cents:amt});
+    cred[ci].a-=amt; deb[di].a-=amt;
+    if (!cred[ci].a) ci++; if (!deb[di].a) di++;
+  }
+  $('trList').innerHTML = tr.length
+    ? tr.map(t=>`<div class="row" style="padding:6px 0"><span>${esc(names[t.from]??'?')} → ${esc(names[t.to]??'?')}</span>
+        <span class="amount">${money(t.cents/100, currency)}</span></div>`).join('')
+    : '<span class="stamp">Todo saldado</span>';
+}
+
+// ---------- tabs / modales ----------
+$('tGastos').onclick = () => tab('Gastos');
+$('tSaldos').onclick = () => tab('Saldos');
+function tab(t){
+  $('tGastos').classList.toggle('on', t==='Gastos');
+  $('tSaldos').classList.toggle('on', t==='Saldos');
+  $('pGastos').classList.toggle('hidden', t!=='Gastos');
+  $('pSaldos').classList.toggle('hidden', t!=='Saldos');
+  $('mAdd').classList.add('hidden'); $('mSettle').classList.add('hidden');
+}
+$('bAdd').onclick = () => {
+  $('ePayer').innerHTML = members.map(m=>`<option value="${m}" ${m===me?'selected':''}>${esc(names[m]??'?')}</option>`).join('');
+  $('mAdd').classList.remove('hidden'); $('pGastos').classList.add('hidden');
+};
+$('bCancelExp').onclick = () => { $('mAdd').classList.add('hidden'); $('pGastos').classList.remove('hidden'); };
+$('bSettle').onclick = () => {
+  const opts = members.map(m=>`<option value="${m}">${esc(names[m]??'?')}</option>`).join('');
+  $('sFrom').innerHTML = opts; $('sFrom').value = me;
+  $('sTo').innerHTML = opts;
+  $('mSettle').classList.remove('hidden'); $('pSaldos').classList.add('hidden');
+};
+$('bCancelSettle').onclick = () => { $('mSettle').classList.add('hidden'); $('pSaldos').classList.remove('hidden'); };
+
+// ---------- guardar gasto (mismo RPC que el iPhone) ----------
+$('bSaveExp').onclick = async () => {
+  hideErr('expErr');
+  const desc = $('eDesc').value.trim();
+  const amt = parseFloat($('eAmt').value.replace(',','.'));
+  const payer = $('ePayer').value;
+  if (!desc) return err('expErr','Ponle concepto al gasto.');
+  if (!(amt>0)) return err('expErr','El monto debe ser mayor a cero.');
+  $('bSaveExp').disabled = true;
+  // división igual, en centavos exactos (residuo al primero)
+  const cents = Math.round(amt*100);
+  const base = Math.floor(cents/members.length);
+  const splits = members.map((m,i)=>({user_id:m, amount:(base + (i < cents-base*members.length ? 1:0))/100}));
+  const { error } = await sb.rpc('amigapp_add_expense', {
+    p_group_id: group.id, p_description: desc, p_amount: amt, p_paid_by: payer,
+    p_split_mode: 'equal', p_splits: splits, p_payers: [{user_id:payer, amount:amt}] });
+  $('bSaveExp').disabled = false;
+  if (error) return err('expErr','No se pudo guardar: '+error.message);
+  $('eDesc').value=''; $('eAmt').value='';
+  $('bCancelExp').click();
+  await Promise.all([loadExpenses(), loadBalances()]);
+};
+
+// ---------- registrar pago ----------
+$('bSaveSettle').onclick = async () => {
+  hideErr('setErr');
+  const from = $('sFrom').value, to = $('sTo').value;
+  const amt = parseFloat($('sAmt').value.replace(',','.'));
+  if (from===to) return err('setErr','Elige dos personas distintas.');
+  if (!(amt>0)) return err('setErr','El monto debe ser mayor a cero.');
+  $('bSaveSettle').disabled = true;
+  const { error } = await sb.from('amigapp_settlements').insert({
+    group_id: group.id, from_user: from, to_user: to, amount: amt, created_by: me });
+  $('bSaveSettle').disabled = false;
+  if (error) return err('setErr','No se pudo registrar: '+error.message);
+  $('sAmt').value='';
+  $('bCancelSettle').click();
+  await loadBalances();
+};
+
+$('bRefresh').onclick = async () => { await loadMembers(); await Promise.all([loadExpenses(), loadBalances()]); };
+$('bOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+function err(id,msg){ const el=$(id); el.textContent=msg; el.classList.remove('hidden'); }
+function hideErr(id){ $(id).classList.add('hidden'); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+</body>
+</html>
