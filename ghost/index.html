@@ -204,7 +204,7 @@ async function enterApp(){
   $('gEmoji').textContent = g.emoji || '🧾';
   $('gName').textContent = g.name;
   await loadMembers();
-  $('meLine').textContent = `tú: ${names[me] ?? 'fantasma'} 👻 · código del grupo ${g.invite_code}`;
+  $('meLine').textContent = `tú: ${names[me] ?? 'fantasma 👻'} · código del grupo ${g.invite_code}`;
   show('vApp');
   await Promise.all([loadExpenses(), loadBalances()]);
 }
