@@ -1,6 +1,6 @@
 # divid-landing
 
-Landing page de **Divid** — *divide la cuenta sin broncas*.
+Landing page de **Divid** — *divide la cuenta sin problemas*.
 
 Sitio estático de una sola página (`index.html` + `assets/`), sin build ni
 dependencias. Estética de **ticket / recibo de papel**, espejo de la app
