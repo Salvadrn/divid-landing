@@ -121,7 +121,8 @@ input:focus,select:focus{outline:2px solid var(--ink);outline-offset:-1px}
       <div class="field"><div class="label">Concepto</div><input id="eDesc" placeholder="Cena, taxi, súper…"></div>
       <div class="field"><div class="label">Monto total</div><input id="eAmt" inputmode="decimal" placeholder="0.00"></div>
       <div class="field"><div class="label">Quién pagó</div><select id="ePayer"></select></div>
-      <p class="muted">Se divide igual entre todos los del grupo.</p>
+      <div class="field"><div class="label">Categoría</div><select id="eCat"></select></div>
+      <p class="muted">Se divide igual entre todos. Para dividir distinto, usa la app.</p>
       <hr class="dash">
       <button class="btn" id="bSaveExp">Guardar gasto</button>
       <button class="linkout" id="bCancelExp">cancelar</button>
@@ -159,7 +160,26 @@ const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const CATS = {food:'🍔',transport:'🚗',lodging:'🏨',groceries:'🛒',fun:'🎉',drinks:'🍺',
   shopping:'🛍️',health:'💊',home:'🏠',services:'🧾',other:'📦'};
+const CAT_LABELS = {food:'Comida',transport:'Transporte',lodging:'Hospedaje',groceries:'Súper',
+  fun:'Diversión',drinks:'Bebidas',shopping:'Compras',health:'Salud',home:'Casa',services:'Servicios',other:'Otro'};
 const money = (n,c='MXN') => new Intl.NumberFormat('es-MX',{style:'currency',currency:c}).format(n);
+
+// Adivina la categoría desde el concepto (como la app). null = no encontró.
+function guessCat(s){
+  const t=(s||'').toLowerCase(); const has=(...w)=>w.some(x=>t.includes(x));
+  if(has('uber','taxi','gasolina','pasaje','metro','camión','camion','transporte','vuelo','avión','avion','peaje','caseta')) return 'transport';
+  if(has('hotel','airbnb','hospedaje','posada','cabaña','cabana','hostal')) return 'lodging';
+  if(has('súper','super','mandado','despensa','walmart','soriana','bodega','oxxo')) return 'groceries';
+  if(has('cerveza','chela','bar','trago','vino','mezcal','tequila','michelada','cantina','copas')) return 'drinks';
+  if(has('cine','boletos','concierto','antro','fiesta','diversión','diversion','parque','juego')) return 'fun';
+  if(has('ropa','zapatos','amazon','mercado libre','regalo')) return 'shopping';
+  if(has('doctor','medicina','farmacia','médico','medico','hospital','consulta','salud')) return 'health';
+  if(has('renta','luz','agua','internet','limpieza','mantenimiento','predial')) return 'home';
+  if(has('servicio','suscripción','suscripcion','netflix','spotify','plan')) return 'services';
+  if(has('comida','taco','restaurante','pizza','sushi','desayuno','cena','almuerzo','café','cafe','torta','burrito')) return 'food';
+  return null;
+}
+let catTouched=false;
 
 let me=null, group=null, members=[], names={}, currency='MXN';
 
@@ -265,8 +285,12 @@ function tab(t){
 }
 $('bAdd').onclick = () => {
   $('ePayer').innerHTML = members.map(m=>`<option value="${m}" ${m===me?'selected':''}>${esc(names[m]??'?')}</option>`).join('');
+  $('eCat').innerHTML = Object.keys(CAT_LABELS).map(k=>`<option value="${k}">${CATS[k]} ${CAT_LABELS[k]}</option>`).join('');
+  catTouched=false; $('eCat').value = guessCat($('eDesc').value) || 'other';
   $('mAdd').classList.remove('hidden'); $('pGastos').classList.add('hidden');
 };
+$('eCat').onchange = () => { catTouched = true; };
+$('eDesc').addEventListener('input', () => { if(!catTouched){ const g=guessCat($('eDesc').value); if(g) $('eCat').value=g; } });
 $('bCancelExp').onclick = () => { $('mAdd').classList.add('hidden'); $('pGastos').classList.remove('hidden'); };
 $('bSettle').onclick = () => {
   const opts = members.map(m=>`<option value="${m}">${esc(names[m]??'?')}</option>`).join('');
@@ -291,7 +315,8 @@ $('bSaveExp').onclick = async () => {
   const splits = members.map((m,i)=>({user_id:m, amount:(base + (i < cents-base*members.length ? 1:0))/100}));
   const { error } = await sb.rpc('amigapp_add_expense', {
     p_group_id: group.id, p_description: desc, p_amount: amt, p_paid_by: payer,
-    p_split_mode: 'equal', p_splits: splits, p_payers: [{user_id:payer, amount:amt}] });
+    p_split_mode: 'equal', p_splits: splits, p_payers: [{user_id:payer, amount:amt}],
+    p_category: $('eCat').value });
   $('bSaveExp').disabled = false;
   if (error) return err('expErr','No se pudo guardar: '+error.message);
   $('eDesc').value=''; $('eAmt').value='';
@@ -306,6 +331,7 @@ $('bSaveSettle').onclick = async () => {
   const amt = parseFloat($('sAmt').value.replace(',','.'));
   if (from===to) return err('setErr','Elige dos personas distintas.');
   if (!(amt>0)) return err('setErr','El monto debe ser mayor a cero.');
+  if (!confirm(`¿Registrar que ${names[from]??'?'} le pagó ${money(amt,currency)} a ${names[to]??'?'}?`)) return;
   $('bSaveSettle').disabled = true;
   const { error } = await sb.from('amigapp_settlements').insert({
     group_id: group.id, from_user: from, to_user: to, amount: amt, created_by: me });
@@ -317,7 +343,7 @@ $('bSaveSettle').onclick = async () => {
 };
 
 $('bRefresh').onclick = async () => { await loadMembers(); await Promise.all([loadExpenses(), loadBalances()]); };
-$('bOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+$('bOut').onclick = async () => { if (!confirm('¿Salir del modo fantasma?')) return; await sb.auth.signOut(); location.reload(); };
 
 function err(id,msg){ const el=$(id); el.textContent=msg; el.classList.remove('hidden'); }
 function hideErr(id){ $(id).classList.add('hidden'); }
